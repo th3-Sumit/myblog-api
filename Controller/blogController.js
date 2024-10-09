@@ -7,4 +7,6 @@ exports.createBlog = async(req, res) => {
         title: title,
         body: body
     })
+
+    console.log(title, 'tilte')
 }
