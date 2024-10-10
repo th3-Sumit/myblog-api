@@ -5,9 +5,9 @@ exports.createBlog = async (req, res) => {
 
     try {
         const { user, email } = req.user;
-        const { title, body } = req.body;
+        const { title, body, tags } = req.body;
 
-        if (!title || !body) {
+        if (!title || !body || !tags) {
             return res.status(400).send({
                 success: false,
                 message: "Please enter all required fields."
@@ -17,7 +17,7 @@ exports.createBlog = async (req, res) => {
         const userList = await UserModel.findOne({ email })
 
         if (userList) {
-            const blogList = new BlogModel({ title: title, body: body, user: userList })
+            const blogList = new BlogModel({ title: title, body: body, tags: tags, user: userList })
             await blogList.save().then(() => res.status(200).json({ blogList }));
             userList.blog.push(blogList);
             userList.save();
@@ -33,7 +33,19 @@ exports.createBlog = async (req, res) => {
         }
 
     } catch (error) {
+        if (error) {
+            return res.status(400).send({
+                success: false,
+                message: error.message // Send the error message from Mongoose
+            });
+        }
+
         console.log(error)
+        return res.status(500).send({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message
+        });
     }
 }
 
@@ -74,10 +86,12 @@ exports.updateBlog = async (req, res) => {
         }
 
     } catch (error) {
-        res.status(400).send({
+        console.log(error)
+        return res.status(500).send({
             success: false,
-            message: "Something went wrong."
-        })
+            message: "Internal Server Error",
+            error: error.message
+        });
 
     }
 }
@@ -118,10 +132,11 @@ exports.deleteBlog = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(400).send({
+        return res.status(500).send({
             success: false,
-            message: "Something went wrong."
-        })
+            message: "Internal Server Error",
+            error: error.message
+        });
 
     }
 }
@@ -147,10 +162,11 @@ exports.allBlogs = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(400).send({
+        return res.status(500).send({
             success: false,
-            message: "Something went wrong."
-        })
+            message: "Internal Server Error",
+            error: error.message
+        });
     }
 }
 
@@ -169,10 +185,11 @@ exports.userBlog = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(400).send({
+        return res.status(500).send({
             success: false,
-            message: "Something went wrong."
-        })
+            message: "Internal Server Error",
+            error: error.message
+        });
     }
 
 }
@@ -197,9 +214,10 @@ exports.getBlogById = async (req, res) => {
         
     } catch (error) {
         console.log(error)
-        res.status(400).send({
+        return res.status(500).send({
             success: false,
-            message: "Something went wrong."
-        })        
+            message: "Internal Server Error",
+            error: error.message
+        });       
     }
 }
