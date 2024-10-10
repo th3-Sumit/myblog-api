@@ -81,7 +81,7 @@ exports.login = async (req, res) => {
             email: email
         }
 
-        const token = jwt.sign(tokenPayload, SECRET_KEY, {expiresIn: '1h'})
+        const token = jwt.sign(tokenPayload, SECRET_KEY, {expiresIn: '30d'})
 
         res.status(200).send({
             message: "login success.",
